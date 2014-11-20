@@ -6,6 +6,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var fs = require('fs');
+var port = 8080;
 
 
 app.use(compression({
@@ -21,11 +22,12 @@ app.use(sass.middleware({
 app.use(express.static(__dirname + '/public'));
 
 
-server.listen(8080);
-console.log("Express server listening on port 8080...");
 
-// app.get('/', function(req, res){
-//   res.send('hello world');
+server.listen(port);
+console.log("Express server listening on port "+port+"...");
+
+// app.get('/', function(req, res) {
+//   res.send("Derp");
 // });
 
 io.on('connection', function (socket) {
