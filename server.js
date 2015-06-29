@@ -1,7 +1,7 @@
 
 var express = require('express');
 var compression = require('compression');
-var sass = require('node-sass');
+var sassMiddleware  = require('node-sass-middleware');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -12,7 +12,7 @@ var port = 8080;
 app.use(compression({
   threshold: 512
 }))
-app.use(sass.middleware({
+app.use(sassMiddleware({
       src: __dirname + '/sass',
       dest: __dirname + '/public/css',
       debug: true,

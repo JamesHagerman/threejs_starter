@@ -6,7 +6,7 @@
   "dependencies": {
     "express": "4.x",
     "compression": "*",
-    "node-sass": "*",
+    "node-sass-middleware": "*",
     "socket.io": "*",
     "forever": "*"
   }
