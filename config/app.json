@@ -1,0 +1,12 @@
+{
+  "default": {
+    "port": 8080
+  },
+
+  "development": {
+  },
+
+  "production": {
+    "port": 80
+  }
+}

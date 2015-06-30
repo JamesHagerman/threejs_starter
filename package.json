@@ -8,6 +8,7 @@
     "compression": "*",
     "node-sass-middleware": "*",
     "socket.io": "*",
-    "forever": "*"
+    "forever": "*",
+    "konfig": "*"
   }
 }
