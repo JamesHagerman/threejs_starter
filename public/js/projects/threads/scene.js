@@ -14,7 +14,7 @@ var SCENE = (function () {
 
       //Setup three.js WebGL renderer
       this.renderer = new THREE.WebGLRenderer({antialias: true});
-      this.renderer.shadowMapEnabled = true;
+      //this.renderer.shadowMapEnabled = true;
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       // Append the canvas element created by the renderer to document body element.

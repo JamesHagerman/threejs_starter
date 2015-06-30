@@ -74,7 +74,7 @@ var THREADS = (function () {
       // Update VR headset position and apply to camera.
       SCENE.update();
       THREADS.updateAll();
-      SCENE.camera.position.z += -3;
+      //SCENE.camera.position.z += -3;
       if (SCENE.camera.position.z<=-(100*100)) {
         SCENE.camera.position.z = 0;
       }
