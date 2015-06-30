@@ -223,7 +223,7 @@ function objectText(scene, objectsArray) {
   console.log("starting objectText");
   // Create 3d objects
   this.font = 'helvetiker';
-  this.textMesh = new THREE.TextGeometry("Jam is a Nemo\/", {
+  this.textMesh = new THREE.TextGeometry("WebVR is Fun!!", {
     font: 'helvetiker',
     size: 1,
     height: 1
