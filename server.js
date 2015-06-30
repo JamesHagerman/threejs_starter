@@ -1,12 +1,12 @@
 
+var config = require('konfig')()
+
 // This shit is needed for OpenShift. They set environment variables in their magic system
 // that can be picked up by the app and configured automatically. USE THEM!
 // I grabbed this from: https://developers.openshift.com/en/node-js-project-structure.html
 //
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8888;
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || config.app.port;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-
-var config = require('konfig')()
 
 var express = require('express');
 var compression = require('compression');
@@ -15,7 +15,6 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 //var fs = require('fs');
-var port = 8080;
 
 
 app.use(compression({
@@ -26,13 +25,13 @@ app.use(sassMiddleware({
       dest: __dirname + '/public/css',
       debug: true,
       // outputStyle: 'compressed',
-      prefix:  '/css'
+      prefix: '/css'
   }));
 app.use(express.static(__dirname + '/public'));
 
 
-server.listen(port);
-console.log("Express server listening on port "+port+"...");
+server.listen(server_port, server_ip_address);
+console.log("Express server listening on port "+server_port+"...");
 
 // app.get('/', function(req, res) {
 //   res.send("Derp");

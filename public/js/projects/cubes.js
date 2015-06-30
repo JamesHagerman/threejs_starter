@@ -17,6 +17,7 @@ var Three = (function () {
     init: function () {
       this.scene = new THREE.Scene();
       this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      this.camera.position.z = 3;
 
       this.renderer = new THREE.WebGLRenderer();
       this.renderer.shadowMapEnabled = true;
@@ -53,7 +54,7 @@ var Three = (function () {
 
       this.scene.add(this.cube2);
 
-      this.camera.position.z = 3;
+
 
       // this.ambientLight = new THREE.AmbientLight(0x222222);
       // this.scene.add(this.ambientLight);
