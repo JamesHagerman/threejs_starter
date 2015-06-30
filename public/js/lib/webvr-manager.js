@@ -205,12 +205,12 @@ WebVRManager.prototype.onFullscreenChange = function(e) {
   console.log('isVRMode', isVRMode);
   if (isVRMode) {
     // Orientation lock.
-    screen.orientation.lock('landscape');
+    //screen.orientation.lock('landscape');
     // Set style on button.
     this.setMode(Modes.IMMERSED);
   } else {
     // Unlock orientation.
-    screen.orientation.unlock();
+    //screen.orientation.unlock();
     // Relinquish wake lock.
     this.releaseWakeLock();
     // Go back to compatible mode.

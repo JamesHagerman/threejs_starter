@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,9 @@
  * The base class for all VR devices.
  */
 function VRDevice() {
-  this.hardwareUnitId = 'polyfill';
+  this.hardwareUnitId = 'webvr-polyfill hardwareUnitId';
+  this.deviceId = 'webvr-polyfill deviceId';
+  this.deviceName = 'webvr-polyfill deviceName';
 }
 
 /**
@@ -41,7 +43,7 @@ module.exports.PositionSensorVRDevice = PositionSensorVRDevice;
 
 },{}],2:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,6 +68,13 @@ var DEFAULT_MAX_FOV_TOP = 40;
  * The HMD itself, providing rendering parameters.
  */
 function CardboardHMDVRDevice() {
+  // From com/google/vrtoolkit/cardboard/FieldOfView.java.
+  this.fov = {
+    upDegrees: DEFAULT_MAX_FOV_TOP,
+    downDegrees: DEFAULT_MAX_FOV_BOTTOM,
+    leftDegrees: DEFAULT_MAX_FOV_LEFT_RIGHT,
+    rightDegrees: DEFAULT_MAX_FOV_LEFT_RIGHT
+  };
   // Set display constants.
   this.eyeTranslationLeft = {
     x: INTERPUPILLARY_DISTANCE * -0.5,
@@ -77,35 +86,30 @@ function CardboardHMDVRDevice() {
     y: 0,
     z: 0
   };
-
-  // From com/google/vrtoolkit/cardboard/FieldOfView.java.
-  this.recommendedFOV = {
-    upDegrees: DEFAULT_MAX_FOV_TOP,
-    downDegrees: DEFAULT_MAX_FOV_BOTTOM,
-    leftDegrees: DEFAULT_MAX_FOV_LEFT_RIGHT,
-    rightDegrees: DEFAULT_MAX_FOV_LEFT_RIGHT
-  };
 }
 CardboardHMDVRDevice.prototype = new HMDVRDevice();
 
-CardboardHMDVRDevice.prototype.getRecommendedEyeFieldOfView = function(whichEye) {
-  return this.recommendedFOV;
-};
-
-CardboardHMDVRDevice.prototype.getEyeTranslation = function(whichEye) {
+CardboardHMDVRDevice.prototype.getEyeParameters = function(whichEye) {
+  var eyeTranslation;
   if (whichEye == 'left') {
-    return this.eyeTranslationLeft;
+    eyeTranslation = this.eyeTranslationLeft;
+  } else if (whichEye == 'right') {
+    eyeTranslation = this.eyeTranslationRight;
+  } else {
+    console.error('Invalid eye provided: %s', whichEye);
+    return null;
   }
-  if (whichEye == 'right') {
-    return this.eyeTranslationRight;
-  }
+  return {
+    recommendedFieldOfView: this.fov,
+    eyeTranslation: eyeTranslation
+  };
 };
 
 module.exports = CardboardHMDVRDevice;
 
 },{"./base.js":1}],3:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -121,18 +125,32 @@ module.exports = CardboardHMDVRDevice;
 var PositionSensorVRDevice = require('./base.js').PositionSensorVRDevice;
 var THREE = require('./three-math.js');
 
+// How much to interpolate between the current orientation estimate and the
+// previous estimate position. This is helpful for devices with low
+// deviceorientation firing frequency (eg. on iOS, it is 20 Hz).
+// The larger this value (in [0, 1]), the smoother but more delayed the
+// head tracking is.
+var SMOOTHING_FACTOR = 0.4;
+
 /**
  * The positional sensor, implemented using web DeviceOrientation APIs.
  */
 function GyroPositionSensorVRDevice() {
+  this.deviceId = 'webvr-polyfill:gyro';
+  this.deviceName = 'VR Position Device (webvr-polyfill:gyro)';
+
   // Subscribe to deviceorientation events.
   window.addEventListener('deviceorientation', this.onDeviceOrientationChange.bind(this));
   window.addEventListener('orientationchange', this.onScreenOrientationChange.bind(this));
   this.deviceOrientation = null;
   this.screenOrientation = window.orientation;
 
+  // The last orientation (for smooth interpolation).
+  this.lastOrientation = new THREE.Quaternion();
+
   // Helper objects for calculating orientation.
   this.finalQuaternion = new THREE.Quaternion();
+  this.tmpQuaternion = new THREE.Quaternion();
   this.deviceEuler = new THREE.Euler();
   this.screenTransform = new THREE.Quaternion();
   // -PI/2 around the x-axis.
@@ -146,7 +164,9 @@ GyroPositionSensorVRDevice.prototype = new PositionSensorVRDevice();
  */
 GyroPositionSensorVRDevice.prototype.getState = function() {
   return {
+    hasOrientation: true,
     orientation: this.getOrientation(),
+    hasPosition: false,
     position: null
   }
 };
@@ -183,6 +203,15 @@ GyroPositionSensorVRDevice.prototype.getOrientation = function() {
   this.finalQuaternion.multiply(this.screenTransform);
   this.finalQuaternion.multiply(this.worldTransform);
 
+  // Get the last orientation ready for use.
+  this.tmpQuaternion.copy(this.lastOrientation);
+
+  // Save this result as the last orientation.
+  this.lastOrientation.copy(this.finalQuaternion);
+
+  // Interpolate between the new estimate and the last quaternion.
+  this.finalQuaternion.slerp(this.tmpQuaternion, SMOOTHING_FACTOR);
+
   return this.finalQuaternion;
 };
 
@@ -191,7 +220,7 @@ module.exports = GyroPositionSensorVRDevice;
 
 },{"./base.js":1,"./three-math.js":6}],4:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -210,7 +239,7 @@ new WebVRPolyfill();
 
 },{"./webvr-polyfill.js":7}],5:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -235,11 +264,14 @@ var MOUSE_SPEED_X = 0.5;
 var MOUSE_SPEED_Y = 0.3;
 
 /**
- * Another virtual position sensor, this time implemented using keyboard and
+ * A virtual position sensor, implemented using keyboard and
  * mouse APIs. This is designed as for desktops/laptops where no Device*
  * events work.
  */
 function MouseKeyboardPositionSensorVRDevice() {
+  this.deviceId = 'webvr-polyfill:mouse-keyboard';
+  this.deviceName = 'VR Position Device (webvr-polyfill:mouse-keyboard)';
+
   // Attach to mouse and keyboard events.
   window.addEventListener('keydown', this.onKeyDown_.bind(this));
   window.addEventListener('mousemove', this.onMouseMove_.bind(this));
@@ -272,7 +304,9 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
   this.orientation.setFromEuler(this.euler);
 
   return {
+    hasOrientation: true,
     orientation: this.orientation,
+    hasPosition: false,
     position: null
   }
 };
@@ -295,6 +329,8 @@ MouseKeyboardPositionSensorVRDevice.prototype.animateTheta_ = function(targetAng
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.animatePhi_ = function(targetAngle) {
+  // Prevent looking too far up or down.
+  targetAngle = this.clamp_(targetAngle, -Math.PI/2, Math.PI/2);
   this.animateKeyTransitions_('phi', targetAngle);
 };
 
@@ -330,10 +366,17 @@ MouseKeyboardPositionSensorVRDevice.prototype.onMouseDown_ = function(e) {
 
 // Very similar to https://gist.github.com/mrflix/8351020
 MouseKeyboardPositionSensorVRDevice.prototype.onMouseMove_ = function(e) {
-  if (!this.isDragging) {
+  if (!this.isDragging && !this.isPointerLocked_()) {
     return;
   }
-  this.rotateEnd.set(e.clientX, e.clientY);
+  // Support pointer lock API.
+  if (this.isPointerLocked_()) {
+    var movementX = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
+    var movementY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
+    this.rotateEnd.set(this.rotateStart.x - movementX, this.rotateStart.y - movementY);
+  } else {
+    this.rotateEnd.set(e.clientX, e.clientY);
+  }
   // Calculate how much we moved in mouse space.
   this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
   this.rotateStart.copy(this.rotateEnd);
@@ -342,10 +385,23 @@ MouseKeyboardPositionSensorVRDevice.prototype.onMouseMove_ = function(e) {
   var element = document.body;
   this.phi += 2 * Math.PI * this.rotateDelta.y / element.clientHeight * MOUSE_SPEED_Y;
   this.theta += 2 * Math.PI * this.rotateDelta.x / element.clientWidth * MOUSE_SPEED_X;
+
+  // Prevent looking too far up or down.
+  this.phi = this.clamp_(this.phi, -Math.PI/2, Math.PI/2);
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onMouseUp_ = function(e) {
   this.isDragging = false;
+};
+
+MouseKeyboardPositionSensorVRDevice.prototype.clamp_ = function(value, min, max) {
+  return Math.min(Math.max(min, value), max);
+};
+
+MouseKeyboardPositionSensorVRDevice.prototype.isPointerLocked_ = function() {
+  var el = document.pointerLockElement || document.mozPointerLockElement ||
+      document.webkitPointerLockElement;
+  return el !== undefined;
 };
 
 module.exports = MouseKeyboardPositionSensorVRDevice;
@@ -2476,7 +2532,7 @@ module.exports = THREE;
 
 },{}],7:[function(require,module,exports){
 /*
- * Copyright 2015 Boris Smus. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -2489,20 +2545,29 @@ module.exports = THREE;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 var CardboardHMDVRDevice = require('./cardboard-hmd-vr-device.js');
 var GyroPositionSensorVRDevice = require('./gyro-position-sensor-vr-device.js');
 var MouseKeyboardPositionSensorVRDevice = require('./mouse-keyboard-position-sensor-vr-device.js');
+// Uncomment to add positional tracking via webcam.
+//var WebcamPositionSensorVRDevice = require('./webcam-position-sensor-vr-device.js');
 var HMDVRDevice = require('./base.js').HMDVRDevice;
 var PositionSensorVRDevice = require('./base.js').PositionSensorVRDevice;
 
 function WebVRPolyfill() {
   this.devices = [];
 
-  // Feature detect for existing WebVR API.
-  if ('getVRDevices' in navigator) {
-    return;
+  if (!this.isWebVRAvailable()) {
+    this.enablePolyfill();
   }
+}
 
+WebVRPolyfill.prototype.isWebVRAvailable = function() {
+  return ('getVRDevices' in navigator) || ('mozGetVRDevices' in navigator);
+};
+
+
+WebVRPolyfill.prototype.enablePolyfill = function() {
   // Initialize our virtual VR devices.
   if (this.isCardboardCompatible()) {
     this.devices.push(new CardboardHMDVRDevice());
@@ -2513,6 +2578,8 @@ function WebVRPolyfill() {
     this.devices.push(new GyroPositionSensorVRDevice());
   } else {
     this.devices.push(new MouseKeyboardPositionSensorVRDevice());
+    // Uncomment to add positional tracking via webcam.
+    //this.devices.push(new WebcamPositionSensorVRDevice());
   }
 
   // Provide navigator.getVRDevices.
@@ -2521,7 +2588,7 @@ function WebVRPolyfill() {
   // Provide the CardboardHMDVRDevice and PositionSensorVRDevice objects.
   window.HMDVRDevice = HMDVRDevice;
   window.PositionSensorVRDevice = PositionSensorVRDevice;
-}
+};
 
 WebVRPolyfill.prototype.getVRDevices = function() {
   var devices = this.devices;
@@ -2539,12 +2606,13 @@ WebVRPolyfill.prototype.getVRDevices = function() {
  */
 WebVRPolyfill.prototype.isMobile = function() {
   return /Android/i.test(navigator.userAgent) ||
-      /iPhone|iPad|iPod/i.test(navigator.userAgent);;
+      /iPhone|iPad|iPod/i.test(navigator.userAgent);
 };
 
 WebVRPolyfill.prototype.isCardboardCompatible = function() {
   // For now, support all iOS and Android devices.
-  return this.isMobile();
+  // Also enable the global CARDBOARD_DEBUG flag.
+  return this.isMobile() || window.CARDBOARD_DEBUG;
 };
 
 module.exports = WebVRPolyfill;

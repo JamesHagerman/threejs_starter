@@ -28,8 +28,8 @@ var App = (function() {
       //==============
       // Init objects here!
       Socket.init();
-      Three.init();
-      //THREADS.init();
+      //Three.init();
+      THREADS.init();
 
       App.initComplete = true;
     },
@@ -40,7 +40,7 @@ var App = (function() {
         //==============
         // Load objects here!
         Socket.load();
-        Three.load();
+        //Three.load();
 
       } else {
         if (!App.initFailed) {
