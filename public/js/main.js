@@ -29,6 +29,7 @@ var App = (function() {
       // Init objects here!
       Socket.init();
       Three.init();
+      //THREADS.init();
 
       App.initComplete = true;
     },

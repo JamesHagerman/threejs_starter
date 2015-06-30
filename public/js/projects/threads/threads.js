@@ -89,9 +89,9 @@ var THREADS = (function () {
 
 //=====================
 // Start Threads:
-$(document).ready(function () {
-  THREADS.init();
-});
+//$(document).ready(function () {
+//  THREADS.init();
+//});
 
 
 

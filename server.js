@@ -1,3 +1,11 @@
+
+// This shit is needed for OpenShift. They set environment variables in their magic system
+// that can be picked up by the app and configured automatically. USE THEM!
+// I grabbed this from: https://developers.openshift.com/en/node-js-project-structure.html
+//
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8888;
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+
 var config = require('konfig')()
 
 var express = require('express');
