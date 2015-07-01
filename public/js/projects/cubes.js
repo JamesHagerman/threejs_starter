@@ -22,7 +22,7 @@ var Three = (function () {
       this.renderer = new THREE.WebGLRenderer();
       this.renderer.shadowMapEnabled = true;
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-      $('body').append(this.renderer.domElement);
+      $('body').prepend(this.renderer.domElement);
 
       this.geometry = new THREE.BoxGeometry(1, 1, 1);
       this.material = new THREE.MeshPhongMaterial({specular: 0x009900, color: 0x00ff00});

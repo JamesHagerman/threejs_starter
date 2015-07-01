@@ -18,7 +18,7 @@ var SCENE = (function () {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       // Append the canvas element created by the renderer to document body element.
-      document.body.appendChild(this.renderer.domElement);
+      $('body').prepend(this.renderer.domElement);
 
       // Create a three.js scene. Fog so the lines disappear in the distance.
       this.scene = new THREE.Scene();
