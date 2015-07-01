@@ -78,8 +78,7 @@ var Three = (function () {
       this.spotLight.shadowCameraFar = 4000;
       this.spotLight.shadowCameraFov = 30;
       this.scene.add(this.spotLight);
-    },
-    load: function () {
+
       this.render();
     },
     render: function () {
