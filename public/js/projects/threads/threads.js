@@ -29,22 +29,6 @@ var THREADS = (function () {
       //objectText();
       //objectLineTest();
 
-
-
-    },
-
-    createCube: function () {
-      // THIS WHOLE FUNCTION WAS REPLCAED WITH:
-      new OurVRCube(SCENE.scene, this.allObjects);
-      // DON"T CALL createCube() anymore.
-      var aCube = new OurVRCube(SCENE.scene, this.allObjects);
-
-      // And then save it to the aBunchOfCubes array:
-      this.allObjects.push(aCube);
-
-      // And add it to the scene (this could be move to a later point in the app...)
-      SCENE.add(aCube.cube);
-
     },
 
     listObjects: function () {
@@ -85,13 +69,5 @@ var THREADS = (function () {
     }
   };
 })();
-
-
-//=====================
-// Start Threads:
-//$(document).ready(function () {
-//  THREADS.init();
-//});
-
 
 
