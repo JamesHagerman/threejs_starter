@@ -9,6 +9,7 @@
     "node-sass-middleware": "*",
     "socket.io": "*",
     "forever": "*",
-    "konfig": "*"
+    "konfig": "*",
+    "swisseph": "git+https://git@github.com/JamesHagerman/swisseph.git"
   }
 }
