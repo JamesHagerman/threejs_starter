@@ -50,12 +50,10 @@ app.get('/astro', function(req, res) {
   //res.send(config.app);
 
   var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
-  var julday = swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL);
+  //var julday = swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL);
+  //console.log("Day: " + julday);
 
   var geo = {lat: 38.833333, long: -104.816667}
-
-  console.log("Day: " + julday);
-
 
   var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;
 
@@ -66,21 +64,21 @@ app.get('/astro', function(req, res) {
     // Sun position
     swisseph.swe_calc_ut (julday_ut, swisseph.SE_SUN, flag, function (body) {
       assert (!body.error, body.error);
-      console.log ('Sun position:', body);
+      //console.log ('Sun position:', body);
       res.send(body);
 
       // Sun Houses position:
-      swisseph.swe_houses(julday_ut, geo.lat, geo.long, 'K', body.longitude, body.latitude, function(result){
-        assert(!result.error, result.error);
-        console.log('Sun house position: ', result);
-      });
+      //swisseph.swe_houses(julday_ut, geo.lat, geo.long, 'K', body.longitude, body.latitude, function(result){
+      //  assert(!result.error, result.error);
+      //  console.log('Sun house position: ', result);
+      //});
     });
 
     // Moon position
-    swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
-      assert (!body.error, body.error);
-      console.log ('Moon position:', body);
-    });
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  console.log ('Moon position:', body);
+    //});
 
 
   });
