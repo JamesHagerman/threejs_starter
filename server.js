@@ -49,11 +49,12 @@ app.get('/config', function(req, res) {
 app.get('/astro', function(req, res) {
   //res.send(config.app);
 
-  var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
+  //var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
+  var date = {year: 2015, month: 1, day: 19, hour: 12, minute: 00};
   //var julday = swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL);
   //console.log("Day: " + julday);
 
-  var geo = {lat: 38.833333, long: -104.816667}
+  var geo = {lat: 38.833333, long: -104.816667};
 
   var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;
 
@@ -86,12 +87,39 @@ app.get('/astro', function(req, res) {
 
 
 
+function grabSun() {
 
+}
 
 
 io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
     console.log(data);
+  });
+  socket.on('getPlanets', function (data) {
+    console.log(data);
+    var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
+    var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;
+
+    swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL, function (julday_ut) {
+      // assert.equal (julday_ut, 2455927.5);
+      console.log ('Julian UT day for date:', julday_ut);
+
+      // Sun position
+      swisseph.swe_calc_ut (julday_ut, swisseph.SE_SUN, flag, function (body) {
+        assert (!body.error, body.error);
+        //res.send(body);
+        socket.emit('sun', { sunBody: 'body' });
+      });
+
+      // Moon position
+      swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
+        assert (!body.error, body.error);
+        socket.emit('moon', { moonBody: 'body' });
+      });
+
+    });
+
   });
 });

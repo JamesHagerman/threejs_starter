@@ -139,10 +139,19 @@ var Socket = (function () {
   return {
     socket: null,
     init: function () {
-      socket = io('http://localhost:'+App.config.port);
-      socket.on('news', function (data) {
+      var that = this;
+      this.socket = io('http://localhost:'+App.config.port);
+      this.socket.on('news', function (data) {
         console.log(data);
-        socket.emit('my other event', {my: 'data'});
+        that.socket.emit('my other event', {my: 'data'});
+      });
+      this.socket.on('sun', function (data) {
+        console.log("sun: " + data);
+        //socket.emit('my other event', {my: 'data'});
+      });
+      this.socket.on('moon', function (data) {
+        console.log("moon: " + data);
+        //socket.emit('my other event', {my: 'data'});
       });
     },
     load: function () {
