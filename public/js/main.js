@@ -1,3 +1,4 @@
+var currentProject;
 var AppRouter = Backbone.Router.extend({
   routes: {
     // Order matters:
@@ -11,18 +12,23 @@ var AppRouter = Backbone.Router.extend({
   execute: function(callback, args, name) {
     // ToDo: Implement a "teardown" for these projects canvas elements...
     // This should probably be a fade to black so it's smooth in VR
-    console.log("AppRouter sending user to: " + name);
+    console.log("Checking for teardown: " + currentProject);
+    if (typeof currentProject !== 'undefined') {
+      console.log("Tearing down the last project...");
+      window[currentProject].destroy();
+    }
+    console.log("Loading next project... " + name);
   }
 });
 
 var App = (function() {
   return {
     app_router: null,
-    config: {},
-    initComplete: false,
-    initFailed: false,
+    //config: {},
+    //initComplete: false,
+    //initTries: 0,
+    //initFailed: false,
     init: function() {
-      this.bootRouter();
 
       // getConfig is really ONLY needed for the socket.io pieces.
       // Otherwise, the apps should be able to run from the AppRouter
@@ -35,7 +41,10 @@ var App = (function() {
       // Also, since this isn't doing anything right now, it should be
       // fine to just throw anything that WOULD have been called via
       // the window load event into the App.load() method.
-      this.getConfig(this.configLoaded);
+      //this.getConfig(this.configLoaded);
+
+      Socket.init();
+      this.bootRouter();
     },
     bootRouter: function() {
       var that = this;
@@ -45,18 +54,22 @@ var App = (function() {
 
       // Routes:
       this.app_router.on('route:threads', function (actions) {
+        currentProject = "THREADS";
         THREADS.init();
       });
 
       this.app_router.on('route:threejs', function (actions) {
+        currentProject = "Three";
         Three.init();
       });
 
       this.app_router.on('route:portfolio', function (actions) {
+        currentProject = "THREADS";
         THREADS.init();
       });
 
       this.app_router.on('route:astrovr', function (actions) {
+        currentProject = "ASTROVR";
         ASTROVR.init();
       });
 
@@ -73,31 +86,31 @@ var App = (function() {
       // Start Backbone history a necessary step for bookmarkable URL's
       Backbone.history.start();
     },
-    getConfig: function(callback) {
-      $.ajax({
-        url: window.location.origin + '/config',
-        success: function(data, textStatus, jqXHR) {
-          console.dir(data);
-          App.config = data;
-          if (typeof data !== "undefined") {
-            callback();
-          }
-        },
-        error: function() {
-          console.log("FAIL");
-          App.initFailed = true;
-        }
-      });
-    },
-    configLoaded: function() {
-      console.log("Config Loaded");
-
-      //==============
-      // Init objects here!
-      Socket.init();
-
-      App.initComplete = true;
-    },
+    //getConfig: function(callback) {
+    //  $.ajax({
+    //    url: window.location.origin + '/config',
+    //    success: function(data, textStatus, jqXHR) {
+    //      console.dir(data);
+    //      App.config = data;
+    //      if (typeof data !== "undefined") {
+    //        callback();
+    //      }
+    //    },
+    //    error: function() {
+    //      console.log("FAIL");
+    //      App.initFailed = true;
+    //    }
+    //  });
+    //},
+    //configLoaded: function() {
+    //  console.log("Config Loaded");
+    //
+    //  //==============
+    //  // Init objects here!
+    //  Socket.init();
+    //
+    //  App.initComplete = true;
+    //},
 
     load: function() {
       // ANY app depends on the $(window).load() event (basically,
@@ -105,20 +118,23 @@ var App = (function() {
       // before it runs) MUST set the App.initComplete property to true.
       //
       // Otherwise, the load will need really be needed...
-      if (App.initComplete) {
+      //if (App.initComplete) {
 
         //==============
         // Load objects here!
-        Socket.load();
 
-      } else {
-        if (!App.initFailed) {
-          console.log("waiting for app init to finish...");
-          window.setTimeout(App.load, 100);
-        } else {
-          console.log("App failed to initalize...");
-        }
-      }
+      //} else {
+      //  if (!App.initFailed) {
+      //    console.log("waiting for app init to finish...");
+      //    App.initTries += 1;
+      //    if (App.initTries > 5) {
+      //      App.initFailed = true;
+      //    }
+      //    window.setTimeout(App.load, 100);
+      //  } else {
+      //    console.log("App failed to initalize...");
+      //  }
+      //}
     }
   };
 })();
@@ -129,12 +145,6 @@ $(document).ready(function () {
 });
 
 
-// ToDo: Rethink setting up this ALL of the time.
-// Really, it should only be needed when the CSS needs to be rendered
-// before some code runs.
-//
-// Honestly, it might be fine here... I should probably add a fade in to
-// most projects... *shrug*
 $(window).load(function () {
   //console.log("and loaded!");
   App.load();
@@ -145,7 +155,7 @@ var Socket = (function () {
     socket: null,
     init: function () {
       var that = this;
-      this.socket = io('http://localhost:'+App.config.port);
+      this.socket = io(':8080/');
       this.socket.on('news', function (data) {
         console.log(data);
         that.socket.emit('my other event', {my: 'data'});
@@ -160,9 +170,6 @@ var Socket = (function () {
         console.dir(data);
         //socket.emit('my other event', {my: 'data'});
       });
-    },
-    load: function () {
-
     }
   };
 })();

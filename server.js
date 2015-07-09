@@ -41,9 +41,9 @@ console.log("Express server listening on port "+server_port+"...");
 //   res.send("Derp");
 // });
 
-app.get('/config', function(req, res) {
-  res.send(config.app);
-});
+//app.get('/config', function(req, res) {
+//  res.send(config.app);
+//});
 
 
 app.get('/astro', function(req, res) {
@@ -91,6 +91,9 @@ io.on('connection', function (socket) {
   socket.on('my other event', function (data) {
     console.log(data);
   });
+  socket.on('AstroVR', function (data) {
+    AstroVRSocketHandler(data, socket);
+  });
   socket.on('getPlanets', function (data) {
     console.log(data.date);
     var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
@@ -120,3 +123,32 @@ io.on('connection', function (socket) {
 
   });
 });
+
+function AstroVRSocketHandler(data, socket) {
+  console.log(data);
+  //console.log(data.date);
+  //var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
+  //date = data.date || date;
+  //var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;// | swisseph.SEFLG_XYZ;
+  //
+  //swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL, function (julday_ut) {
+  //  // assert.equal (julday_ut, 2455927.5);
+  //  console.log ('Julian UT day for date:', julday_ut);
+  //
+  //  // Sun position
+  //  swisseph.swe_calc_ut (julday_ut, swisseph.SE_SUN, flag, function (body) {
+  //    assert (!body.error, body.error);
+  //    //res.send(body);
+  //    //console.log (' Sun position:', body);
+  //    socket.emit('sun', { sunBody: body });
+  //  });
+  //
+  //  // Moon position
+  //  swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
+  //    assert (!body.error, body.error);
+  //    //console.log (' Moon position:', body);
+  //    socket.emit('moon', { moonBody: body });
+  //  });
+  //
+  //});
+}

@@ -18,19 +18,10 @@ var SCENE = (function () {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       // Append the canvas element created by the renderer to document body element.
-      $('body').prepend(this.renderer.domElement);
+      $('div.scene').html(this.renderer.domElement);
 
       // Create a three.js scene. Fog so the lines disappear in the distance.
       this.scene = new THREE.Scene();
-      this.scene.fog = new THREE.FogExp2(0x000000, 0.0016);
-
-      //lights!
-      this.light = new THREE.DirectionalLight(0xffffff, 1);
-      this.light.position.set(1, 1, 1).normalize();
-      this.scene.add(this.light);
-
-      this.amblight = new THREE.AmbientLight(0x333333);
-      this.scene.add(this.amblight);
 
       // Create a three.js camera
       this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);

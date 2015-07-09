@@ -1,5 +1,6 @@
 var Three = (function () {
   return {
+    live: true,
     scene: null,
     camera: null,
     renderer: null,
@@ -15,6 +16,7 @@ var Three = (function () {
     light: null,
     directionalLight: null,
     init: function () {
+      this.live = true;
       this.scene = new THREE.Scene();
       this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       this.camera.position.z = 3;
@@ -22,7 +24,7 @@ var Three = (function () {
       this.renderer = new THREE.WebGLRenderer();
       this.renderer.shadowMapEnabled = true;
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-      $('body').prepend(this.renderer.domElement);
+      $('div.scene').html(this.renderer.domElement);
 
       this.geometry = new THREE.BoxGeometry(1, 1, 1);
       this.material = new THREE.MeshPhongMaterial({specular: 0x009900, color: 0x00ff00});
@@ -85,7 +87,9 @@ var Three = (function () {
       // Because the object handed into the requestAnimationFrame() will be called as a callback, it has to
       // be referenced globally (via Three.render) directly. Otherwise, 'this' in the callback doesn't make sense.
       // This goes for all objects in the render function.
-      requestAnimationFrame(Three.render);
+      if (Three.live) {
+        requestAnimationFrame(Three.render);
+      }
 
       Three.cube.rotation.x += 0.1;
       Three.cube.rotation.y += 0.1;
@@ -94,6 +98,12 @@ var Three = (function () {
       Three.cube2.rotation.y += 0.001;
 
       Three.renderer.render(Three.scene, Three.camera);
+    },
+    destroy: function() {
+      Three.live = false;
+      for( var i = SCENE.scene.children.length - 1; i >= 0; i--) {
+        SCENE.scene.remove(SCENE.scene.children[i]);
+      }
     }
   }
 })();
