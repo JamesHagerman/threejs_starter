@@ -138,19 +138,147 @@ function AstroVRSocketHandler(data, socket) {
     // Sun position
     swisseph.swe_calc_ut (julday_ut, swisseph.SE_SUN, flag, function (body) {
       assert (!body.error, body.error);
-      //res.send(body);
-      //console.log (' Sun position:', body);
-      body.name = "sun";
-      socket.emit('sun', body );
+      body.name = "Sun";
+      body.color = 0xfff00;
+      socket.emit('Sun', body );
     });
 
     // Moon position
     swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
       assert (!body.error, body.error);
-      //console.log (' Moon position:', body);
-      body.name = "moon";
-      socket.emit('moon', body);
+      body.name = "Moon";
+      body.color = 0xffffff;
+      socket.emit('Moon', body);
     });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_MERCURY, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Mercury";
+      body.color = 0x7b0000;
+      socket.emit('Mercury', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_VENUS, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Venus";
+      body.color = 0x009c00;
+      socket.emit('Venus', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_MARS, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Mars";
+      body.color = 0xff0000;
+      socket.emit('Mars', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_JUPITER, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Jupiter";
+      body.color = 0xfbbc00;
+      socket.emit('Jupiter', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_SATURN, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Saturn";
+      body.color = 0xbdbdbd;
+      socket.emit('Saturn', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_URANUS, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Uranus";
+      body.color = 0x007bff;
+      socket.emit('Uranus', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_NEPTUNE, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Neptune";
+      body.color = 0x7b0084;
+      socket.emit('Neptune', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_PLUTO, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Pluto";
+      body.color = 0xe0e0e0;
+      socket.emit('Pluto', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_MEAN_NODE, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Mean Node";
+      socket.emit('Mean Node', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_TRUE_NODE, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "True Node";
+      socket.emit('True Node', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_MEAN_APOG, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Mean Apogee";
+      socket.emit('Mean Apogee', body);
+    });
+
+    swisseph.swe_calc_ut (julday_ut, swisseph.SE_OSCU_APOG, flag, function (body) {
+      assert (!body.error, body.error);
+      body.name = "Lilith";
+      socket.emit('Lilith', body);
+    });
+
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_CHIRON, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Chiron";
+    //  socket.emit('Chiron', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_PHOLUS, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Pholus";
+    //  socket.emit('Pholus', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_CERES, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Ceres";
+    //  socket.emit('Ceres', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_PALLAS, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Pallas";
+    //  socket.emit('Pallas', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_JUNO, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Juno";
+    //  socket.emit('Juno', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_VESTA, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "Vesta";
+    //  socket.emit('Vesta', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_INTP_APOG, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "SE_INTP_APOG";
+    //  socket.emit('SE_INTP_APOG', body);
+    //});
+    //
+    //swisseph.swe_calc_ut (julday_ut, swisseph.SE_INTP_PERG, flag, function (body) {
+    //  assert (!body.error, body.error);
+    //  body.name = "SE_INTP_PERG";
+    //  socket.emit('SE_INTP_PERG', body);
+    //});
+
 
   });
 }

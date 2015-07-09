@@ -36,17 +36,126 @@ var ASTROVR = (function () {
       // store the current object as 'that' so we can still access it after the callbacks
       // are called:
       var that = this;
-      Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 17, minute: 46}});
 
-      Socket.socket.on('sun', function (data) {
-        console.dir(data);
+      Socket.socket.on('Sun', function (data) {
+        //console.dir(data);
         new Planet(SCENE.scene, that.allObjects, data);
       });
 
-      Socket.socket.on('moon', function (data) {
-        console.dir(data);
+      Socket.socket.on('Moon', function (data) {
+        //console.dir(data);
         new Planet(SCENE.scene, that.allObjects, data);
       });
+
+      Socket.socket.on('Mercury', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Venus', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Mars', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Jupiter', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Saturn', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Uranus', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Neptune', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Pluto', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Mean Node', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('True Node', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Mean Apogee', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Lilith', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Chiron', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Pholus', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Ceres', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Pallas', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Juno', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('Vesta', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('SE_INTP_APOG', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('SE_INTP_PERG', function (data) {
+        //console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      for (var m = 1; m < 12; m+=1) {
+        for (var d = 1; d < 31; d+=1) {
+          //for (var h = 1; h < 24; h+=1) {
+          Socket.socket.emit('AstroVR', {'date': {year: 1985, month: m, day: d, hour: 12, minute: 0}});
+          //}
+        }
+      }
+
+
 
 
 

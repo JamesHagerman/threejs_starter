@@ -2,13 +2,16 @@
 function Planet(scene, objectsArray, data) {
   // This is the basic template for 3D objects.
   this.name =  data.name; // Grab the first key out of the data. This will probably change later
-  this.geometry = new THREE.SphereGeometry(0.01, 32, 32 );
+  this.color = data.color || 0xffffff;
 
-  if (this.name == "sun") {
-    this.material = new THREE.MeshBasicMaterial({color: 0xfff000, side: THREE.DoubleSide});
+  if (this.name == "Sun") {
+    this.geometry = new THREE.SphereGeometry(0.1, 5, 5 );
   } else {
-    this.material = new THREE.MeshBasicMaterial({color: 0x000fff, side: THREE.DoubleSide});
+    this.geometry = new THREE.SphereGeometry(0.1, 5, 5 );
   }
+
+
+  this.material = new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide});
 
   this.cube = new THREE.Mesh(this.geometry, this.material);
 
@@ -45,7 +48,7 @@ function Planet(scene, objectsArray, data) {
   //x = 0;
   //y = 0;
   //z = -20;
-  console.log("name: " + this.name + " x: " + x + " y: " + y + " z: " + z);
+  //console.log("name: " + this.name + " x: " + x + " y: " + y + " z: " + z);
 
   this.pos = new THREE.Vector3(x, y, z); // x, y, z
   this.cube.position.set(this.pos.x, this.pos.y, this.pos.z);
@@ -88,7 +91,7 @@ Planet.prototype = {
 
 function Earth(scene, objectsArray) {
   this.name =  "earth";
-  this.geometry = new THREE.SphereGeometry(0.01, 32, 32 );
+  this.geometry = new THREE.SphereGeometry(0.1, 32, 32 );
   this.material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
   this.cube = new THREE.Mesh(this.geometry, this.material);
 
