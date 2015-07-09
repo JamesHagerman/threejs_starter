@@ -18,6 +18,8 @@ var ASTROVR = (function () {
       SCENE.amblight = new THREE.AmbientLight(0x333333);
       SCENE.scene.add(SCENE.amblight);
 
+      SCENE.camera.position.z = 2;
+
       this.createObjects();
 
       // We should only animate after we have the objects pulled from node.js!
@@ -26,22 +28,27 @@ var ASTROVR = (function () {
     },
 
     createObjects: function () {
-      //for (var i = 0; i < 500; i++) {
-        //new OurVRCube(SCENE.scene, this.allObjects);
-      //}
 
-      //new NewLine(SCENE.scene, this.allObjects);
-      //new objectText(SCENE.scene, this.allObjects);
+      new Earth(SCENE.scene, this.allObjects);
 
-      //new Cube(SCENE.scene, this.allObjects);
-      //new objectStrange(SCENE.scene, this.allObjects);
-
+      // We are going to grab a list of objects to display from node.js over socket.io.
+      // To do that, we will need to make some asyncrhonous calls. That means we need to
+      // store the current object as 'that' so we can still access it after the callbacks
+      // are called:
+      var that = this;
       Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 17, minute: 46}});
-      new Planet(SCENE.scene, this.allObjects);
+
+      Socket.socket.on('sun', function (data) {
+        console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
+
+      Socket.socket.on('moon', function (data) {
+        console.dir(data);
+        new Planet(SCENE.scene, that.allObjects, data);
+      });
 
 
-      //objectText();
-      //objectLineTest();
 
     },
 
@@ -72,9 +79,9 @@ var ASTROVR = (function () {
       SCENE.update();
       ASTROVR.updateAll();
       //SCENE.camera.position.z += -3;
-      if (SCENE.camera.position.z<=-(100*100)) {
-        SCENE.camera.position.z = 0;
-      }
+      //if (SCENE.camera.position.z<=-(100*100)) {
+      //  SCENE.camera.position.z = 0;
+      //}
 
       SCENE.draw();
 

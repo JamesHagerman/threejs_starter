@@ -26,15 +26,23 @@ var SCENE = (function () {
       // Create a three.js camera
       this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
 
+
+
+      // Create a VR manager helper to enter and exit VR mode.
+      this.vrmgr = new WebVRManager(this.effect);
+
       // Apply VR headset positional data to camera.
-      this.controls = new THREE.VRControls(this.camera);
+      if (this.vrmgr.isVRMode()) {
+        this.controls = new THREE.VRControls(this.camera);
+      } else {
+        this.controls = new THREE.OrbitControls( this.camera);
+        //this.controls.dynamicDampingFactor = 0.5;
+        //this.controls.target.set( 0, 0, 0 );
+      }
 
       // Apply VR stereo rendering to renderer
       this.effect = new THREE.VREffect(this.renderer);
       this.effect.setSize(window.innerWidth, window.innerHeight);
-
-      // Create a VR manager helper to enter and exit VR mode.
-      this.vrmgr = new WebVRManager(this.effect);
 
 
       // Wire up keyboard input and window resize handlers:
