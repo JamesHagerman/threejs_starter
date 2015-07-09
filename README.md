@@ -38,7 +38,7 @@ Helps enter and exit VR mode, provides best practices while in VR.
 
 
 Threads App itself:
-<script src="js/threads.js"></script>
+<script src="js/astrovr.js"></script>
 
 
 

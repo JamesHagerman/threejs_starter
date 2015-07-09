@@ -86,21 +86,16 @@ app.get('/astro', function(req, res) {
 });
 
 
-
-function grabSun() {
-
-}
-
-
 io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
     console.log(data);
   });
   socket.on('getPlanets', function (data) {
-    console.log(data);
+    console.log(data.date);
     var date = {year: 1985, month: 1, day: 19, hour: 17, minute: 46};
-    var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;
+    date = data.date || date;
+    var flag = swisseph.SEFLG_SPEED | swisseph.SEFLG_MOSEPH;// | swisseph.SEFLG_XYZ;
 
     swisseph.swe_julday(date.year, date.month, date.day, date.hour, swisseph.SE_GREG_CAL, function (julday_ut) {
       // assert.equal (julday_ut, 2455927.5);
@@ -110,13 +105,15 @@ io.on('connection', function (socket) {
       swisseph.swe_calc_ut (julday_ut, swisseph.SE_SUN, flag, function (body) {
         assert (!body.error, body.error);
         //res.send(body);
-        socket.emit('sun', { sunBody: 'body' });
+        //console.log (' Sun position:', body);
+        socket.emit('sun', { sunBody: body });
       });
 
       // Moon position
       swisseph.swe_calc_ut (julday_ut, swisseph.SE_MOON, flag, function (body) {
         assert (!body.error, body.error);
-        socket.emit('moon', { moonBody: 'body' });
+        //console.log (' Moon position:', body);
+        socket.emit('moon', { moonBody: body });
       });
 
     });

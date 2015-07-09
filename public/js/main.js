@@ -5,6 +5,7 @@ var AppRouter = Backbone.Router.extend({
     "threads": "threads",
     "threejs": "threejs",
     "portfolio": "portfolio",
+    "astrovr": "astrovr",
     "*actions": "defaultRoute"
   },
   execute: function(callback, args, name) {
@@ -53,6 +54,10 @@ var App = (function() {
 
       this.app_router.on('route:portfolio', function (actions) {
         THREADS.init();
+      });
+
+      this.app_router.on('route:astrovr', function (actions) {
+        ASTROVR.init();
       });
 
       this.app_router.on('route:getPost', function (id) {
@@ -124,7 +129,7 @@ $(document).ready(function () {
 });
 
 
-// ToDo: Rethink setting up this even ALL of the time.
+// ToDo: Rethink setting up this ALL of the time.
 // Really, it should only be needed when the CSS needs to be rendered
 // before some code runs.
 //
@@ -146,11 +151,13 @@ var Socket = (function () {
         that.socket.emit('my other event', {my: 'data'});
       });
       this.socket.on('sun', function (data) {
-        console.log("sun: " + data);
+        console.log("sun: ");
+        console.dir(data);
         //socket.emit('my other event', {my: 'data'});
       });
       this.socket.on('moon', function (data) {
-        console.log("moon: " + data);
+        console.log("moon: ");
+        console.dir(data);
         //socket.emit('my other event', {my: 'data'});
       });
     },
