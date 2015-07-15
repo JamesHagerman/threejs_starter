@@ -272,6 +272,7 @@ WebVRManager.prototype.getOS = function(osName) {
 };
 
 WebVRManager.prototype.enterVR = function() {
+  window.WUT = this;
   this.effect.setFullScreen(true);
 };
 

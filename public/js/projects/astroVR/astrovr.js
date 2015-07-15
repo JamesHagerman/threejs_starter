@@ -1,3 +1,23 @@
+function calcXYZ(R, lat, lon) {
+  var z = -R * Math.cos(lat) * Math.cos(lon);
+  var x = -R * Math.cos(lat) * Math.sin(lon);
+  var y = R * Math.sin(lat);
+  return new THREE.Vector3(x, y, z);
+}
+
+var planetNames = [
+  'Sun',
+  'Moon',
+  'Mercury',
+  'Venus',
+  'Mars',
+  'Jupiter',
+  'Saturn',
+  'Uranus',
+  'Neptune',
+  'Pluto'
+];
+
 var ASTROVR = (function () {
   return {
     live: true,
@@ -11,14 +31,24 @@ var ASTROVR = (function () {
       SCENE.init();
 
       // Build the rest of the project specific scene:
-      //SCENE.scene.fog = new THREE.FogExp2(0x000000, 0.0016);
+      SCENE.scene.fog = new THREE.FogExp2(0x000000, 0.0016);
       SCENE.light = new THREE.DirectionalLight(0xffffff, 1);
-      SCENE.light.position.set(1, 1, 1).normalize();
+      SCENE.light.position.set(0, 2, 1).normalize();
+      SCENE.light.castShadow = true;
+      SCENE.light.shadowDarkness = 0;
       SCENE.scene.add(SCENE.light);
-      SCENE.amblight = new THREE.AmbientLight(0x333333);
-      SCENE.scene.add(SCENE.amblight);
 
-      SCENE.camera.position.z = 2;
+      //SCENE.amblight = new THREE.AmbientLight(0x333333);
+      //SCENE.scene.add(SCENE.amblight);
+
+      //var pointLight = new THREE.PointLight(0xFFFFFF);
+      //pointLight.position.x = 0;
+      //pointLight.position.y = 0;
+      //pointLight.position.z = 0;
+      //pointLight.intensity = 10000.0;
+      //SCENE.scene.add(pointLight);
+
+      SCENE.camera.position.z = 0.0001;
 
       this.createObjects();
 
@@ -29,7 +59,10 @@ var ASTROVR = (function () {
 
     createObjects: function () {
 
-      new Earth(SCENE.scene, this.allObjects);
+      // Draw the Axes:
+      new Axes(SCENE.scene, this.allObjects);
+
+      //new Earth(SCENE.scene, this.allObjects);
 
       // We are going to grab a list of objects to display from node.js over socket.io.
       // To do that, we will need to make some asyncrhonous calls. That means we need to
@@ -37,127 +70,23 @@ var ASTROVR = (function () {
       // are called:
       var that = this;
 
-      Socket.socket.on('Sun', function (data) {
-        //console.dir(data);
+      Socket.socket.on('Planet', function (data) {
+        console.dir(data);
         new Planet(SCENE.scene, that.allObjects, data);
+        new Label(SCENE.scene, that.allObjects, data);
       });
 
-      Socket.socket.on('Moon', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
+      Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 12, minute: 0}, 'config': 'chart'});
 
-      Socket.socket.on('Mercury', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Venus', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Mars', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Jupiter', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Saturn', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Uranus', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Neptune', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Pluto', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Mean Node', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('True Node', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Mean Apogee', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Lilith', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Chiron', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Pholus', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Ceres', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Pallas', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Juno', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('Vesta', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('SE_INTP_APOG', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      Socket.socket.on('SE_INTP_PERG', function (data) {
-        //console.dir(data);
-        new Planet(SCENE.scene, that.allObjects, data);
-      });
-
-      for (var m = 1; m < 12; m+=1) {
-        for (var d = 1; d < 31; d+=1) {
-          //for (var h = 1; h < 24; h+=1) {
-          Socket.socket.emit('AstroVR', {'date': {year: 1985, month: m, day: d, hour: 12, minute: 0}});
+      //for (var y = 1985; y < 2015; y+=1) {
+      //  for (var m = 0; m < 12; m+=1) {
+      //    for (var d = 1; d < 31; d+=1) {
+      //      for (var h = 0; h < 24; h+=1) {
+      //          Socket.socket.emit('AstroVR', {'date': {year: 2015, month: m, day: 14, hour: 22, minute: 0}});
+            //}
           //}
-        }
-      }
-
-
-
-
+        //}
+      //}
 
     },
 
