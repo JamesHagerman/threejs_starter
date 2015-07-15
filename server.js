@@ -201,7 +201,7 @@ function AstroVRSocketHandler(data, socket) {
     // assert.equal (julday_ut, 2455927.5);
     console.log ('Julian UT day for date:', julday_ut);
 
-    for (var i = 0; i < 9; i+=1) {
+    for (var i = 0; i <= 9; i+=1) {
       // i is used as planet index:
       var index = i;
       swisseph.swe_calc_ut (julday_ut, i, flag, function (body) {

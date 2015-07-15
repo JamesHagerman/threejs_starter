@@ -31,7 +31,7 @@ var ASTROVR = (function () {
       SCENE.init();
 
       // Build the rest of the project specific scene:
-      SCENE.scene.fog = new THREE.FogExp2(0x000000, 0.0016);
+      //SCENE.scene.fog = new THREE.FogExp2(0x000000, 0.0016);
       SCENE.light = new THREE.DirectionalLight(0xffffff, 1);
       SCENE.light.position.set(0, 2, 1).normalize();
       SCENE.light.castShadow = true;
@@ -61,6 +61,7 @@ var ASTROVR = (function () {
 
       // Draw the Axes:
       new Axes(SCENE.scene, this.allObjects);
+      //new Ecliptic(SCENE.scene, this.allObjects);
 
       //new Earth(SCENE.scene, this.allObjects);
 
@@ -76,13 +77,14 @@ var ASTROVR = (function () {
         new Label(SCENE.scene, that.allObjects, data);
       });
 
-      Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 12, minute: 0}, 'config': 'chart'});
+      //Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 12, minute: 0}, 'config': 'chart'});
+      //Socket.socket.emit('AstroVR', {'date': {year: 1988, month: 4, day: 29, hour: 13, minute: 0}, 'config': 'chart'});
 
       //for (var y = 1985; y < 2015; y+=1) {
       //  for (var m = 0; m < 12; m+=1) {
       //    for (var d = 1; d < 31; d+=1) {
       //      for (var h = 0; h < 24; h+=1) {
-      //          Socket.socket.emit('AstroVR', {'date': {year: 2015, month: m, day: 14, hour: 22, minute: 0}});
+                Socket.socket.emit('AstroVR', {'date': {year: 2015, month: 7, day: 15, hour: 14, minute: 0}});
             //}
           //}
         //}

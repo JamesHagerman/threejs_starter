@@ -37,13 +37,13 @@ var SCENE = (function () {
       this.vrmgr = new WebVRManager(this.effect);
 
       // Apply VR headset positional data to camera.
-      if (this.vrmgr.isVRMode()) {
-        this.controls = new THREE.VRControls(this.camera);
-      } else {
+      //if (this.vrmgr.isVRMode()) {
+      //  this.controls = new THREE.VRControls(this.camera);
+      //} else {
         this.controls = new THREE.OrbitControls( this.camera);
       //  //this.controls.dynamicDampingFactor = 0.5;
       //  //this.controls.target.set( 0, 0, 0 );
-      }
+      //}
 
 
 
@@ -75,6 +75,7 @@ var SCENE = (function () {
     // Event handlers:
     // Listen for keyboard event and zero positional sensor on appropriate keypress.
     onKey: function (event) {
+      console.log("derp");
       if (event.keyCode == 90) { // z
         this.controls.zeroSensor();
       }

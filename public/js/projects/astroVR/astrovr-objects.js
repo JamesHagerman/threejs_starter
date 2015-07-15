@@ -197,6 +197,40 @@ Axes.prototype = {
   }
 };
 
+function Ecliptic(scene, objectsArray) {
+  this.name =  "axes";
+  this.geometry = new THREE.PlaneGeometry( 100, 100, 100 );
+  this.material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide, transparent: false, opacity: 0.7} );
+  this.ecliptic = new THREE.Mesh( this.geometry, this.material );
+  this.quaternion = new THREE.Quaternion();
+  this.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), 90 * Math.PI / 180);
+  this.ecliptic.rotation.setFromQuaternion(this.quaternion);
+
+  // Add this WHOLE object to the main Objects array (THREADS.allObjects):
+  objectsArray.push(this);
+  // Then add this object's mesh to the scene
+  scene.add(this.ecliptic);
+}
+Ecliptic.prototype = {
+  // We're going to use a Vector3 for object position:
+  pos: 0,  // THREE.Vector3
+
+  // Object and texture storage
+  geometry: 0,
+  material: 0,
+  cube: 0, // The actual THREE.Object3D itself
+
+  // Object shape and animation parameters:
+  angle: 0,
+
+  update: function () {
+    //this.cube.rotation.x += 0.5 * Math.PI / 180;
+  },
+  draw: function () {
+    // probably don't need this...
+  }
+};
+
 
 function Label(scene, objectsArray, data) {
   this.name =  data.name; // Grab the first key out of the data. This will probably change later
