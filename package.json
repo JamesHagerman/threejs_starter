@@ -10,6 +10,6 @@
     "socket.io": "*",
     "forever": "*",
     "konfig": "*",
-    "swisseph": "git+https://git@github.com/JamesHagerman/swisseph.git"
+    "swisseph": "git+https://git@github.com/mivion/swisseph.git"
   }
 }

@@ -72,23 +72,45 @@ var ASTROVR = (function () {
       var that = this;
 
       Socket.socket.on('Planet', function (data) {
-        console.dir(data);
+        //console.dir(data);
         new Planet(SCENE.scene, that.allObjects, data);
         new Label(SCENE.scene, that.allObjects, data);
       });
 
-      //Socket.socket.emit('AstroVR', {'date': {year: 1985, month: 1, day: 19, hour: 12, minute: 0}, 'config': 'chart'});
+      Socket.socket.on('Houses', function (data) {
+        console.dir(data);
+        new Houses(SCENE.scene, that.allObjects, data);
+        new Ascendant(SCENE.scene, that.allObjects, data);
+      });
+
+      var geo = {lat: 38.833333, long: -104.816667};
+      var date = {year: 1985, month: 1, day: 19, hour: 18, minute: 20};
+      Socket.socket.emit('getPlanets', {'date': date, 'config': 'chart'});
+      Socket.socket.emit('getHouses', {'date': date, 'geo': geo});
+
+
       //Socket.socket.emit('AstroVR', {'date': {year: 1988, month: 4, day: 29, hour: 13, minute: 0}, 'config': 'chart'});
+
+      //Socket.socket.emit('AstroVR', {'date': {year: 2000, month: 0, day: 1, hour: 12}}); // Equinox in 2000
 
       //for (var y = 1985; y < 2015; y+=1) {
       //  for (var m = 0; m < 12; m+=1) {
-      //    for (var d = 1; d < 31; d+=1) {
+          for (var d = 1; d < 31; d+=1) {
       //      for (var h = 0; h < 24; h+=1) {
-                Socket.socket.emit('AstroVR', {'date': {year: 2015, month: 7, day: 15, hour: 14, minute: 0}});
+                date = {year: 2015, month: 7, day: d, hour: 14, minute: 0};
+                Socket.socket.emit('getPlanets', {'date': date});
+                //Socket.socket.emit('getHouses', {'date': date, 'geo': geo});
             //}
-          //}
+          }
         //}
       //}
+
+      // Show current planet locations:
+      var today = new Date();
+      //Socket.socket.emit('getPlanets', {'date': {year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(), hour: today.getHours(), minute: 0}});
+
+      // Show houses for current date:
+      //Socket.socket.emit('getHouses', {'date': {year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(), hour: today.getHours(), minute: 0}});
 
     },
 
